@@ -20,7 +20,7 @@ public class UserController {
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getUsers(){
+    public List<User> getAll(){
         return userRepository.findAll();
     }
 

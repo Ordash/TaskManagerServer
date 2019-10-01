@@ -18,9 +18,10 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @GetMapping("{id}")
+    @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public List<Task> getUserTasks(@PathVariable Long id) throws UserNotFound {
-        return taskService.findUserTasks(id);
+    public List<Task> getAll(){
+        return taskService.findAll();
     }
+
 }

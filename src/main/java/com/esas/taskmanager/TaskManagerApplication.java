@@ -11,6 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 
 @SpringBootApplication
@@ -33,13 +34,14 @@ public class TaskManagerApplication implements CommandLineRunner {
         userRepository.save(new User("user1", "pw1"));
         userRepository.save(new User("user2", "pw2"));
         userRepository.save(new User("user3", "pw3"));
-        taskRepository.save(new Task(userRepository.getOne(1L), "Task1", "Do task1",
+
+        taskRepository.save(new Task(userRepository.findById(1L).get(), "Task1", "Do task1",
 				Priority.HIGH, Status.TODO, LocalDateTime.now().plusHours(6L),
 				2L));
-		taskRepository.save(new Task(userRepository.getOne(2L), "Task2", "Do task2",
+		taskRepository.save(new Task(userRepository.findById(2L).get(), "Task2", "Do task2",
 				Priority.HIGH, Status.TODO, LocalDateTime.now().plusHours(4L),
 				3L));
-		taskRepository.save(new Task(userRepository.getOne(1L), "Task1", "Do task3",
+		taskRepository.save(new Task(userRepository.findById(1L).get(), "Task1", "Do task3",
 				Priority.HIGH, Status.TODO, LocalDateTime.now().plusHours(2L),
 				3L));
 	}

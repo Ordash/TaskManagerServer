@@ -2,18 +2,16 @@ package com.esas.taskmanager.Task;
 
 import com.esas.taskmanager.User.User;
 import com.esas.taskmanager.Comment.Comment;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "tasks")
 public class Task {
@@ -21,7 +19,7 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private User creator;
 
     @OneToMany(mappedBy = "taskComment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
