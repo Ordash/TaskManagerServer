@@ -19,4 +19,12 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
+    public List<Task> findByCreator(String username) throws NoTaskCreatedByUserException {
+        return taskRepository.findByCreator_Username(username)
+                .orElseThrow(() -> new NoTaskCreatedByUserException("No task created by the user " + username));
+    }
+
+    public List<Task> findByAssigneeID(Long id) throws NoTaskAssignedException {
+        return taskRepository.findByAssigneeID(id).orElseThrow(() -> new NoTaskAssignedException("No task assigned for assigneeID " + id));
+    }
 }

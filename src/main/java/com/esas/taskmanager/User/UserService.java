@@ -1,6 +1,5 @@
 package com.esas.taskmanager.User;
 
-import com.esas.taskmanager.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,5 +13,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-
+    public Long findUserId(String username) throws UserNotFound {
+        return userRepository.findIdByUsername(username).orElseThrow(() -> new UserNotFound("User " + username + "does not exist"));
+    }
 }
