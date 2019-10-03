@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,11 +20,17 @@ import java.util.List;
 @Table(name = "users")
 public class User {
 
+    @Bean
+    private PasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
+    @Column(unique = true)
     private String username;
 
     @NotBlank
@@ -34,6 +43,6 @@ public class User {
 
     public User(@NotBlank String username, @NotBlank String password) {
         this.username = username;
-        this.password = password;
+        this.password = encoder().encode(password);
     }
 }
