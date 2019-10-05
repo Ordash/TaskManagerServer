@@ -13,6 +13,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
+import static com.esas.taskmanager.security.SecurityConfig.encoder;
+
 @Getter
 @Setter
 @Entity
@@ -20,10 +22,6 @@ import java.util.List;
 @Table(name = "users")
 public class User {
 
-    @Bean
-    private PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

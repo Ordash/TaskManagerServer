@@ -11,7 +11,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/task")
+@RequestMapping("/api/task")
 @CrossOrigin(origins = "http://localhost:4200")
 public class TaskController {
 
@@ -36,7 +36,7 @@ public class TaskController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List<Task> getAll(){
+    public List<Task> getAll() {
         return taskService.findAll();
     }
 
@@ -44,20 +44,20 @@ public class TaskController {
     @ExceptionHandler(NoTaskAssignedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ErrorResponse noTaskAssignedHandler(NoTaskAssignedException ex){
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ResponseBody
     @ExceptionHandler(UserNotFound.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ErrorResponse userNotFoundExceptionHandler(UserNotFound ex){
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ResponseBody
     @ExceptionHandler(NoTaskCreatedByUserException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ErrorResponse noTaskCreatedExceptionHandler(NoTaskCreatedByUserException ex){
-        return new ErrorResponse(ex.getMessage());
+        return new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

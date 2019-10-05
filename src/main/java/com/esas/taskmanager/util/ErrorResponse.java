@@ -1,16 +1,29 @@
 package com.esas.taskmanager.util;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
+
+import java.util.Date;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class ErrorResponse {
-    private String error;
+    // HTTP Response Status Code
+    private final HttpStatus status;
 
-    public ErrorResponse(String error) {
-        this.error = error;
+    // General Error message
+    private final String message;
+
+    private final Date timestamp;
+
+    public ErrorResponse(final String message, HttpStatus status) {
+        this.message = message;
+        this.status = status;
+        this.timestamp = new java.util.Date();
+    }
+
+    public static ErrorResponse of(final String message, HttpStatus status) {
+        return new ErrorResponse(message, status);
     }
 }
