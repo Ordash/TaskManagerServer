@@ -56,5 +56,15 @@ public class TaskManagerApplication implements CommandLineRunner {
 		taskRepository.save(new Task(userService.findById(1L), "Task3", "Do task3",
 				Priority.HIGH, Status.TODO, LocalDateTime.now().plusHours(2L),
 				3L));
+		taskRepository.save(new Task(userService.findById(1L), "Task4", "Do task4",
+				Priority.HIGH, Status.TODO, LocalDateTime.now().plusHours(2L),
+				3L));
+		taskRepository.save(new Task(userService.findById(3L), "Task5", "Do task5",
+				Priority.HIGH, Status.TODO, LocalDateTime.now().plusHours(2L),
+				1L));
+		taskRepository.save(new Task(userService.findById(2L), "Task6", "Do task6",
+				Priority.HIGH, Status.TODO, LocalDateTime.now().plusHours(2L),
+				1L));
+
 	}
 }

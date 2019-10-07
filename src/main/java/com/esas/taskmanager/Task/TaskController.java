@@ -1,15 +1,19 @@
 package com.esas.taskmanager.Task;
 
-import com.esas.taskmanager.User.UserNotFoundException;
-import com.esas.taskmanager.User.UserService;
 import com.esas.taskmanager.util.ErrorResponse;
+import com.esas.taskmanager.util.ValidationFailureResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/task")
@@ -17,30 +21,25 @@ import java.util.List;
 public class TaskController {
 
     private TaskService taskService;
-    private UserService userService;
 
     @Autowired
-    public TaskController(TaskService taskService, UserService userService) {
+    public TaskController(TaskService taskService) {
         this.taskService = taskService;
-        this.userService = userService;
+    }
+
+    @GetMapping("/userRelated")
+    public List<Task> getAllByCreatorAndAssignee(Principal principal) {
+        return taskService.findByCreatorAndAssignee(principal.getName());
     }
 
     @GetMapping("/created")
-    public List<Task> getByCreator(Principal principal) throws NoTaskCreatedByUserException {
+    public List<Task> getByCreator(Principal principal) {
         return taskService.findByCreator(principal.getName());
     }
 
     @GetMapping("/assigned")
-    public List<Task> getByAssigneeID(Principal principal) throws Exception {
-        return taskService.findByAssigneeID(userService.findUserId(principal.getName()));
-    }
-
-    @GetMapping("/userTasks")
-    public List<Task> getAllByCreatedAndAssigneeId(Principal principal) throws Exception {
-        List<Task> tasks = new ArrayList<>();
-        tasks.addAll(taskService.findByCreator(principal.getName()));
-        tasks.addAll(taskService.findByAssigneeID(userService.findUserId(principal.getName())));
-        return tasks;
+    public List<Task> getByAssignee(Principal principal) {
+        return taskService.findByAssignee(principal.getName());
     }
 
     @GetMapping("/all")
@@ -51,28 +50,25 @@ public class TaskController {
 
     @PostMapping("/new")
     @ResponseStatus(HttpStatus.OK)
-    public void postNew(@RequestBody TaskDTO taskDTO){
-
+    public Task postNew(@RequestBody @Valid TaskDTO taskDTO, Principal principal) {
+        System.out.println(taskDTO.getTitle());
+        System.out.println(taskDTO.getDescription());
+        return taskService.save(taskDTO, principal.getName());
     }
 
     @ResponseBody
-    @ExceptionHandler(NoTaskAssignedException.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ErrorResponse noTaskAssignedHandler(NoTaskAssignedException ex){
-        return new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    ErrorResponse invalidFieldHandler(MethodArgumentNotValidException ex) {
+        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+        String errors = fieldErrors.stream().map(FieldError::getField).collect(Collectors.joining(", "));
+        return new ErrorResponse("Missing parameter: " + errors + "!", HttpStatus.BAD_REQUEST);
     }
 
     @ResponseBody
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ErrorResponse userNotFoundExceptionHandler(UserNotFoundException ex){
-        return new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ResponseBody
-    @ExceptionHandler(NoTaskCreatedByUserException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ErrorResponse noTaskCreatedExceptionHandler(NoTaskCreatedByUserException ex){
+    ErrorResponse userNotFoundExceptionHandler(UsernameNotFoundException ex){
         return new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

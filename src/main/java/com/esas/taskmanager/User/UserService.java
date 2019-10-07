@@ -2,6 +2,7 @@ package com.esas.taskmanager.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,29 +11,31 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private UserRepository userRepository;
-
-    @Bean
-    public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
+    private PasswordEncoder encoder;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder encoder) {
+        this.encoder = encoder;
         this.userRepository = userRepository;
     }
 
-    public Long findUserId(String username) throws UserNotFoundException {
+    public Long findUserId(String username) {
         return userRepository.findIdByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User " + username + "does not exist"));
+                .orElseThrow(() -> new UsernameNotFoundException("User can not be found with username: " + username));
     }
 
     public void save(final User user){
-        user.setPassword(encoder().encode(user.getPassword()));
+        user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
-    public User findById(Long id) throws UserNotFoundException {
+    public User findById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User can not be found with id: " + id));
+                .orElseThrow(() -> new UsernameNotFoundException("User can not be found with id: " + id));
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User can not be found with username: " + username));
     }
 }
