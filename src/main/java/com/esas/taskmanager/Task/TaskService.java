@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 @Service
@@ -45,10 +46,8 @@ public class TaskService {
     }
 
     public Task save(TaskDTO taskDTO, String username) {
-        Task task = new Task();
-        modelMapper.map(taskDTO, task);
-        System.out.println(task.getTitle() + "!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        task.setCreator(userService.findByUsername(username));
+        Task task = modelMapper.map(taskDTO, Task.class);
+        task.setCreator(userService.findByUsername(username));;
         return taskRepository.save(task);
     }
 }

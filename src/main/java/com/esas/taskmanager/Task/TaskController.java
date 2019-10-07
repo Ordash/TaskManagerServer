@@ -1,11 +1,10 @@
 package com.esas.taskmanager.Task;
 
 import com.esas.taskmanager.util.ErrorResponse;
-import com.esas.taskmanager.util.ValidationFailureResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -51,8 +50,6 @@ public class TaskController {
     @PostMapping("/new")
     @ResponseStatus(HttpStatus.OK)
     public Task postNew(@RequestBody @Valid TaskDTO taskDTO, Principal principal) {
-        System.out.println(taskDTO.getTitle());
-        System.out.println(taskDTO.getDescription());
         return taskService.save(taskDTO, principal.getName());
     }
 
@@ -60,9 +57,10 @@ public class TaskController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     ErrorResponse invalidFieldHandler(MethodArgumentNotValidException ex) {
-        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
-        String errors = fieldErrors.stream().map(FieldError::getField).collect(Collectors.joining(", "));
-        return new ErrorResponse("Missing parameter: " + errors + "!", HttpStatus.BAD_REQUEST);
+        String fieldErrors = ex.getBindingResult().getFieldErrors().stream()
+                .map(f -> f.getField() + " " + f.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+        return new ErrorResponse(fieldErrors, HttpStatus.BAD_REQUEST);
     }
 
     @ResponseBody
