@@ -5,14 +5,11 @@ import com.esas.taskmanager.User.UserDTO;
 import com.esas.taskmanager.User.UserRepository;
 import com.esas.taskmanager.util.ErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import static com.esas.taskmanager.security.SecurityConfig.encoder;
 
 @RestController
 @RequestMapping("/authenticate")
@@ -20,6 +17,11 @@ import static com.esas.taskmanager.security.SecurityConfig.encoder;
 public class AuthController {
 
     private UserRepository userRepository;
+
+    @Autowired
+    public PasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Autowired
     public AuthController(UserRepository userRepository) {
@@ -30,7 +32,6 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     public User authenticateUser(@RequestBody UserDTO userDto) {
         User user = userRepository.findByUsername(userDto.getUsername());
-        System.out.println("DvfDFVDFVDFV");
         if(user != null){
             if(encoder().matches(userDto.getPassword(), user.getPassword())){
                 return user;

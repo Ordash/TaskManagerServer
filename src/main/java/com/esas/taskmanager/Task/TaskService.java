@@ -1,5 +1,6 @@
 package com.esas.taskmanager.Task;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,9 +10,11 @@ import java.util.List;
 public class TaskService {
 
     private TaskRepository taskRepository;
+    private ModelMapper modelMapper;
 
     @Autowired
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
         this.taskRepository = taskRepository;
     }
 
@@ -27,4 +30,9 @@ public class TaskService {
     public List<Task> findByAssigneeID(Long id) throws NoTaskAssignedException {
         return taskRepository.findByAssigneeID(id).orElseThrow(() -> new NoTaskAssignedException("No task assigned for assigneeID " + id));
     }
+
+//    public void save(TaskDTO taskDTO) {
+//        Task task = new Task();
+//        taskRepository.save()
+//    }
 }

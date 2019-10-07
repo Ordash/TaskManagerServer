@@ -13,8 +13,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
-import static com.esas.taskmanager.security.SecurityConfig.encoder;
-
 @Getter
 @Setter
 @Entity
@@ -41,6 +39,6 @@ public class User {
 
     public User(@NotBlank String username, @NotBlank String password) {
         this.username = username;
-        this.password = encoder().encode(password);
+        this.password = password;
     }
 }
