@@ -37,12 +37,12 @@ public class Task {
     @Basic
     private LocalDateTime creationDate;
 
-    public Task(User creator, @NotBlank String title, String description, Priority priority, Status status, LocalDateTime deadline, Long assigneeID) {
+    public Task(User creator, @NotBlank String title, String description, Priority priority, LocalDateTime deadline, Long assigneeID) {
         this.creator = creator;
         this.title = title;
         this.description = description;
         this.priority = priority;
-        this.status = status;
+        this.status = Status.TODO;
         this.deadline = deadline;
         this.assigneeID = assigneeID;
         this.creationDate = LocalDateTime.now();
